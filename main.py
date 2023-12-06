@@ -7,6 +7,8 @@ dead = False
 COLOR = (255, 0, 0)
 clock = pygame.time.Clock()
 running = True
+
+
 class Character(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -17,10 +19,24 @@ class Character(pygame.sprite.Sprite):
     def Draw(self):
         screen.blit(self.char, self.pos)
 
+    def CreateBullet(self):
+        center_x = self.pos.x + self.char.get_width() // 2  # gets centre of x
+        center_y = self.pos.y + self.char.get_height() // 2  # gets centre of y
+        return Bullet(center_x, center_y)
+
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.image = pygame.Surface((25, 75))
+        self.image.fill('white')
+        self.rect = self.image.get_rect(center=(pos_x, pos_y))
+
+    def update(self):
+        self.rect.y -= 5
 
 
 character = Character()
-
 
 while running:
     # poll for events
@@ -28,6 +44,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            bullet_group.add(character.CreateBullet())
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     character.Draw()

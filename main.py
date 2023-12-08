@@ -32,12 +32,16 @@ class Enemy_Sprite(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface((20, 30))
         self.image.fill("white")
-        self.pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+        # self.pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
         # y_cord = self.pos.y + self.image.get_height() // 2
+        self.pos = pygame.Vector2(screen.get_width() // 2, 0)
         self.rect = self.image.get_rect(center=self.pos)
-        #rect1 = self.rect
+        # rect1 = self.rect
+
     def update(self):
-        self.rect.y += 2
+        self.rect.y += 1
+        # if collide:
+        #    enemy_sprite_group.remove()
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -46,7 +50,8 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.Surface((10, 50))
         self.image.fill('red')
         self.rect = self.image.get_rect(center=(pos_x, pos_y))
-        #rect2 = self.rect
+        # rect2 = self.rect
+
     def update(self):
         self.rect.y -= 5
 
@@ -63,24 +68,30 @@ while running:
             bullet_group.add(character.CreateBullet())
         if running:
             enemy_sprite_group.add(Enemy_Sprite())
-            collide = bullet.rect.colliderect(enemy_sprite.rect)
-
-            if collide:
-                enemy_sprite_group.remove(Enemy_Sprite())
+            for each_bullet in bullet_group:
+                for enemy in enemy_sprite_group:
+                    collide = each_bullet.rect.colliderect(enemy.rect)
+                    if collide:
+                        enemy_sprite_group.remove(enemy)
+                        bullet_group.remove(each_bullet)
 
     # fill the screen with a color to wipe away anything from last frame
+
+
+    # pygame.draw.rect(screen, color, pygame.Rect(30, 30, 60, 60))
     screen.fill("black")
     character.Draw()
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        character.pos.y -= 200 * character.dt
-    if keys[pygame.K_s]:
-        character.pos.y += 200 * character.dt
-    if keys[pygame.K_a]:
-        character.pos.x -= 200 * character.dt
-    if keys[pygame.K_d]:
-        character.pos.x += 200 * character.dt
+    if keys[pygame.K_w] and character.pos.y > 0:
+        character.pos.y -= 300 * character.dt
+    if keys[pygame.K_s] and character.pos.y < 720 - character.char.get_height():
+        character.pos.y += 300 * character.dt
+    if keys[pygame.K_a] and character.pos.x > 0:
+        character.pos.x -= 300 * character.dt
+    if keys[pygame.K_d] and character.pos.x < 1280- character.char.get_width():
+        character.pos.x += 300 * character.dt
     # flip() the display to put your work on screen
+    #pygame.draw.rect(screen, color, pygame.Rect(5,5,5,5), 2)
     pygame.display.flip()
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-

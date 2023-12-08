@@ -1,3 +1,5 @@
+import time
+
 import pygame
 
 # pygame setup
@@ -25,13 +27,26 @@ class Character(pygame.sprite.Sprite):
         return Bullet(center_x, center_y)
 
 
+class Enemy_Sprite(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((20, 30))
+        self.image.fill("white")
+        self.pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+        # y_cord = self.pos.y + self.image.get_height() // 2
+        self.rect = self.image.get_rect(center=self.pos)
+        #rect1 = self.rect
+    def update(self):
+        self.rect.y += 2
+
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
-        self.image = pygame.Surface((25, 75))
-        self.image.fill('white')
+        self.image = pygame.Surface((10, 50))
+        self.image.fill('red')
         self.rect = self.image.get_rect(center=(pos_x, pos_y))
-
+        #rect2 = self.rect
     def update(self):
         self.rect.y -= 5
 
@@ -46,6 +61,13 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             bullet_group.add(character.CreateBullet())
+        if running:
+            enemy_sprite_group.add(Enemy_Sprite())
+            collide = bullet.rect.colliderect(enemy_sprite.rect)
+
+            if collide:
+                enemy_sprite_group.remove(Enemy_Sprite())
+
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     character.Draw()
